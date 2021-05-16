@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+
+	<!-- Logging Properties -->
+	<Properties>
+		<Property name="LOG_PATTERN">%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%t] %c{1}:%L - %p %m%n</Property>
+		<Property name="APP_LOG_ROOT">$${sys:LOG_ROOT_PATH:-./logs}</Property>
+		<Property name="APP_NAME">streaming</Property>
+	</Properties>
+
+	<Appenders>
+		<!-- Console Appender -->
+		<Console name="Console" target="SYSTEM_OUT" follow="true">
+			<PatternLayout pattern="${LOG_PATTERN}"/>
+		</Console>
+
+		<!-- File Appenders on need basis -->
+
+		<RollingFile name="applicationLog" fileName="${APP_LOG_ROOT}/${APP_NAME}-application.log"
+					 filePattern="${APP_LOG_ROOT}/${APP_NAME}-application-%d{yyyy-MM-dd}-%i.log">
+			<LevelRangeFilter minLevel="ERROR" maxLevel="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+			<JSONLayout compact="true" eventEol="true"/>
+			<PatternLayout>
+				<pattern>${LOG_PATTERN}</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="19500KB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10"/>
+		</RollingFile>
+
+	</Appenders>
+
+	<Loggers>
+
+		<Logger name="ap.streaming.app" additivity="false">
+			<AppenderRef ref="Console"/>
+			<AppenderRef ref = "applicationLog" />
+		</Logger>
+
+		<Root level="INFO">
+			<AppenderRef ref="Console"/>
+			<AppenderRef ref="applicationLog"/>
+		</Root>
+
+	</Loggers>
+
+</Configuration>

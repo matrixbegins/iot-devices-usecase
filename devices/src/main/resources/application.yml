@@ -1,0 +1,54 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/iot_devices_db?currentSchema=devices
+    username: 'ankurpandey'
+    password: ''
+    platform: postgresql
+    hikari:
+      idle-timeout: 10000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      pool-name: MainHikariPool
+      data-source-properties:
+        useConfigs: maxPerformance
+        rewriteBatchedStatements: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+        jdbc:
+          core: DEBUG
+    hat.streaming.devices: DEBUG
+
+server:
+  servlet:
+    context-path: /api/rest
+  port: 7795
+
+info:
+  app:
+    name: "Stream Processing App"
+    app:
+      description: "Stream processing app for IOT signal processing"
+      api_env: ${SPRING_PROFILES_ACTIVE}
+
+management:
+  server:
+    port: 7796
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+  endpoints:
+    web:
+      base-path: /inspector
+      exposure:
+        include: prometheus,health,info,env,metrics
