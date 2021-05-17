@@ -4,6 +4,7 @@ package hat.streaming.devices.modules.rest.controllers
 import hat.streaming.devices.modules.consumers.common.DeviceInfoService
 import hat.streaming.devices.modules.dto.BaseIOTSignal
 import hat.streaming.devices.modules.dto.DeviceInfo
+import hat.streaming.devices.modules.dto.IOTDeviceSignal
 import hat.streaming.devices.modules.kafkaadmin.CreateTopicService
 import hat.streaming.devices.modules.rest.dto.MsgResponse
 import hat.streaming.devices.modules.rest.models.DeviceTypes
@@ -32,6 +33,9 @@ class HomeController(val deviceTypeRepo: DeviceTypeRepo,
 
     @Autowired
     lateinit var baseSignalTemplate: KafkaTemplate<String, BaseIOTSignal>
+
+    @Autowired
+    lateinit var mainSignalTemplate: KafkaTemplate<String, IOTDeviceSignal>
 
     private val logger: Logger = LoggerFactory.getLogger(HomeController::class.java)
 
@@ -87,12 +91,12 @@ class HomeController(val deviceTypeRepo: DeviceTypeRepo,
                     logger.error("Error in publishing message: {}", payload, error)
                 }
             }
-
             addCallback( obj )
         }
 
         return MsgResponse(200, "Msg Sent")
     }
+
 
     @GetMapping("/send/signal/tampered")
     fun sendCompromisedBaseIotSignalToKafka(): MsgResponse {
@@ -112,11 +116,39 @@ class HomeController(val deviceTypeRepo: DeviceTypeRepo,
                     logger.error("Error in publishing message: {}", payload, error)
                 }
             }
-
             addCallback( obj )
         }
 
         return MsgResponse(200, "Msg Sent")
     }
 
+
+    @GetMapping("/send/signal/temperature/json")
+    fun sendJsonTemperatureDeviceSignal(): MsgResponse = runBlocking(Dispatchers.Default)  {
+
+        val payload = BaseIOTSignal(178.00, "TPDSG56GFBD", System.currentTimeMillis(), "sdbfvkjdf565kjvndjkvn2dfbirbavadve65")
+
+        baseSignalTemplate.send("device_events_entry_json", payload)
+
+        return@runBlocking MsgResponse(200, "Msg Sent")
+    }
+
+
+    @GetMapping("/send/signal/main")
+    fun sendDeviceMetricSignal(): MsgResponse = runBlocking(Dispatchers.Default)  {
+
+        val payload = IOTDeviceSignal("C", "Boiler-4ZQH2", "NUCLEAR-INC", "Boston",
+                        230.00, "4QFXB9MEZA", System.currentTimeMillis(), "temperature")
+
+        mainSignalTemplate.send("temperature_metric_tracker", payload)
+
+        payload.signalType = "pressure"
+        payload.signalUnit = "ATM"
+        payload.signalValue = 3.56
+        mainSignalTemplate.send("pressure_metric_tracker", payload)
+
+        return@runBlocking MsgResponse(200, "Msg Sent")
+    }
+
 }
+

@@ -1,5 +1,11 @@
 package hat.streaming.devices.modules.consumers
 
+import hat.streaming.devices.modules.consumers.common.DeviceInfoService
+import hat.streaming.devices.modules.consumers.transformers.KeyValueMessageParser
+import hat.streaming.devices.modules.dto.IOTDeviceSignal
+import hat.streaming.devices.modules.producers.CompromisedSignalProducer
+import hat.streaming.devices.modules.producers.DeviceSignalMainTopicProducer
+import hat.streaming.devices.modules.producers.FaultySignalProducer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
@@ -12,7 +18,12 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class KeyValueFormatEntryTopicConsumer {
+class KeyValueFormatEntryTopicConsumer (val deviceInfoService: DeviceInfoService,
+                                        val faultyProducer: FaultySignalProducer,
+                                        val compromisedProducer: CompromisedSignalProducer,
+                                        val mainProducer: DeviceSignalMainTopicProducer,
+                                        val parser: KeyValueMessageParser
+) {
 
     val logger: Logger = LoggerFactory.getLogger(KeyValueFormatEntryTopicConsumer::class.java)
 
@@ -21,15 +32,45 @@ class KeyValueFormatEntryTopicConsumer {
                               , @Header(KafkaHeaders.RECEIVED_PARTITION_ID) partitions: List<Int>
                               , @Header(KafkaHeaders.OFFSET) offsets: List<Long> ): Unit = runBlocking(Dispatchers.Default) {
 
-        logger.info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
-        logger.info("beginning to consume batch size: {} ", deviceSignals.size);
+//        logger.info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+//        logger.info("beginning to consume batch size: {} ", deviceSignals.size);
+//
+//        for (i in deviceSignals.indices) {
+//            logger.info(
+//                "received message='{}' partition={}, offset= {} ",  deviceSignals[i]
+//                ,partitions[i].toString(), offsets[i]
+//            )
+//        }
+//        logger.info("all batch messages consumed")
 
-        for (i in deviceSignals.indices) {
-            logger.info(
-                "received message='{}' partition={}, offset= {} ",  deviceSignals[i]
-                ,partitions[i].toString(), offsets[i]
-            )
+        deviceSignals.forEach { signalStr ->
+            // get device Info of the signal
+            val signal = parser.parseKeyValueMessage(signalStr)
+            val deviceInfo = run {
+                logger.info("getting device info from Device service= {} ", signal.deviceId)
+                return@run deviceInfoService.getDeviceInfo(signal.deviceId.toString())
+            }
+            signal.signalType = deviceInfo.signalType
+            // check if signal is faulty
+            if(signal.signalValue < deviceInfo.signalMinValue || signal.signalValue > deviceInfo.signalMaxValue) {
+                // push data to faulty signal topic
+                logger.info("Device signal is faulty= {}", signal)
+                faultyProducer.publishFaultySignal(signal)
+                return@forEach
+            }
+            // check if signal is compromised.
+            if(!signal.validateMessageDigest()) {
+                // push data to compromised signal topic
+                logger.info("Device signal is compromised= {}", signal)
+                compromisedProducer.publishCompromisedSignal(signal)
+                return@forEach
+            }
+
+            // we have a valid signal. Push it to relevant signalType topic
+            val iotSignal = IOTDeviceSignal(deviceInfo, signal)
+//            logger.info("publishing to device signal type topic= {}")
+            mainProducer.publishIOTSignal(iotSignal)
         }
-        logger.info("all batch messages consumed")
+
     }
 }

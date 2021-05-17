@@ -12,7 +12,7 @@ class IOTDeviceSignal(
     deviceId:  String? = null,
     timestamp: Long,
     signalType: String? = null
-): BaseIOTSignal(signalValue, deviceId, timestamp, "NA", "NA") {
+): BaseIOTSignal(signalValue, deviceId, timestamp, "NA", signalType) {
 
     constructor(deviceInfo: DeviceInfo, baseSignal: BaseIOTSignal) : this(
             deviceInfo.signalUnit,
