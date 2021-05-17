@@ -41,7 +41,6 @@ CREATE INDEX dvc_info_idx_facility_id ON devices.device_info USING BTREE (facili
 
 -- new table signal_type_metric_template
 CREATE TABLE devices.signal_type_metric_template (
-    id serial Primary Key,
     device_id varchar(50) NOT NULL,
     signal_type varchar(50) NOT NULL,
     signal_unit varchar(50) NOT NULL,
@@ -56,7 +55,8 @@ CREATE TABLE devices.signal_type_metric_template (
 	reported_hour SMALLINT NOT NULL,
 	reported_minute SMALLINT NOT NULL,
 	reported_sec SMALLINT NOT NULL,
-    created_at timestamp  DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at timestamp  DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    PRIMARY KEY (device_id, created_at)
 );
 
 -- CREATE TABLE devices.<signal_type>_metric_tracker AS SELECT * FROM devices.signal_type_metric_template;
@@ -74,7 +74,6 @@ CREATE TABLE devices.signal_type_metric_template (
 
 -- new table faulty_signals
 CREATE TABLE devices.faulty_signals (
-    id serial Primary Key,
     device_id varchar(50) NOT NULL,
     signal_type varchar(50) NOT NULL,
     signal_value NUMERIC(10,4) NOT NULL,
@@ -85,7 +84,8 @@ CREATE TABLE devices.faulty_signals (
 	reported_hour SMALLINT NOT NULL,
 	reported_minute SMALLINT NOT NULL,
 	reported_sec SMALLINT NOT NULL,
-    created_at timestamp  DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at timestamp  DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    PRIMARY KEY (device_id, created_at)
 );
 
 CREATE INDEX faulty_signals_idx_reported_year ON devices.faulty_signals USING BTREE (reported_year);
@@ -99,7 +99,6 @@ CREATE INDEX faulty_signals_idx_signal_type ON devices.faulty_signals USING BTRE
 
 -- new table compromised_signals
 CREATE TABLE devices.compromised_signals (
-    id serial Primary Key,
     device_id varchar(50) NOT NULL,
     signal_type varchar(50) NOT NULL,
     signal_value NUMERIC(10,4) NOT NULL,
@@ -111,7 +110,8 @@ CREATE TABLE devices.compromised_signals (
 	reported_hour SMALLINT NOT NULL,
 	reported_minute SMALLINT NOT NULL,
 	reported_sec SMALLINT NOT NULL,
-    created_at timestamp  DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at timestamp  DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    PRIMARY KEY (device_id, created_at)
 );
 
 CREATE INDEX compromised_signals_idx_reported_year ON devices.compromised_signals USING BTREE (reported_year);
@@ -135,3 +135,11 @@ CREATE INDEX device_cluster_metric_tracker_idx_reported_day ON devices.device_cl
 CREATE INDEX device_cluster_metric_tracker_idx_reported_hour ON devices.device_cluster_metric_tracker USING BTREE (reported_hour);
 CREATE INDEX device_cluster_metric_tracker_idx_reported_minute ON devices.device_cluster_metric_tracker USING BTREE (reported_minute);
 CREATE INDEX device_cluster_metric_tracker_idx_reported_sec ON devices.device_cluster_metric_tracker USING BTREE (reported_sec);
+
+
+CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
+
+SELECT create_hypertable('devices.compromised_signals', 'created_at' );
+SELECT create_hypertable('devices.faulty_signals', 'created_at');
+SELECT create_hypertable('devices.device_cluster_metric_tracker', 'created_at');
+
