@@ -1,4 +1,4 @@
-import json, hashlib
+import json, hashlib, random
 from datetime import datetime
 
 class Message:
@@ -26,7 +26,12 @@ class Message:
         h = hashlib.new('sha512')
         payload = f"{self.deviceId}|{self.signal_value}|{self.timestamp}"
         h.update(bytes(payload.encode('utf-8')))
-        return h.hexdigest()
+        digest = h.hexdigest()
+
+        if random.choice(range(1, 10000)) in (1,2):
+            digest = digest[:-1]
+
+        return digest
 
 
     def timestampMilliSec64(self):
