@@ -16,6 +16,9 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:9092
+    new-topic-config:
+      replica-count: 1
+      partition-count: 1
 
 logging:
   level:

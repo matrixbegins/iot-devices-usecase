@@ -4,6 +4,7 @@ package hat.streaming.devices.modules.rest.controllers
 import hat.streaming.devices.modules.consumers.common.DeviceInfoService
 import hat.streaming.devices.modules.dto.BaseIOTSignal
 import hat.streaming.devices.modules.dto.DeviceInfo
+import hat.streaming.devices.modules.kafkaadmin.CreateTopicService
 import hat.streaming.devices.modules.rest.dto.MsgResponse
 import hat.streaming.devices.modules.rest.models.DeviceTypes
 import hat.streaming.devices.modules.rest.repos.DeviceInfoRepo
@@ -26,7 +27,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class HomeController(val deviceTypeRepo: DeviceTypeRepo,
                      val deviceInfoRepo: DeviceInfoRepo,
-                     val deviceInfoService: DeviceInfoService) {
+                     val deviceInfoService: DeviceInfoService,
+                     val createTopicService: CreateTopicService) {
 
     @Autowired
     lateinit var baseSignalTemplate: KafkaTemplate<String, BaseIOTSignal>
@@ -44,6 +46,12 @@ class HomeController(val deviceTypeRepo: DeviceTypeRepo,
     fun proxyRoute(): Any = runBlocking(Dispatchers.Default) {
         logger.info("route proxy ................")
         return@runBlocking deviceInfoService.getDeviceInfo("E6HUM23Z4X")
+    }
+
+    @GetMapping("/create-topic")
+    fun createTopicRoute(): Any = runBlocking(Dispatchers.Default) {
+        logger.info("route proxy ................")
+        return@runBlocking createTopicService.createTopic("some_unknown_topic")
     }
 
     @GetMapping("/device/{deviceId}")
