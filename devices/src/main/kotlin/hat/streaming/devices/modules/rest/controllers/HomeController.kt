@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.SendResult
-import org.springframework.lang.Nullable
 import org.springframework.util.concurrent.ListenableFuture
 import org.springframework.util.concurrent.ListenableFutureCallback
 import org.springframework.web.bind.annotation.GetMapping
@@ -72,7 +71,7 @@ class HomeController(val deviceTypeRepo: DeviceTypeRepo,
         with(future) {
 
             val obj = object : ListenableFutureCallback<SendResult<String, BaseIOTSignal>> {
-                override fun onSuccess(@Nullable message: SendResult<String, BaseIOTSignal>?) {
+                override fun onSuccess(message: SendResult<String, BaseIOTSignal>?) {
                     logger.info("Message published with offset: {}", message?.recordMetadata?.offset())
                 }
 
@@ -92,12 +91,12 @@ class HomeController(val deviceTypeRepo: DeviceTypeRepo,
 
         val payload = BaseIOTSignal(178.00, "TPDSG56GFBD", 1620987265691, "sdbfvkjdf565kjvndjkvn2dfbirbavadve65", "pressure")
 
-        val future: ListenableFuture<SendResult<String, BaseIOTSignal>> = baseSignalTemplate.send("tampered_signals_topic", payload)
+        val future: ListenableFuture<SendResult<String, BaseIOTSignal>> = baseSignalTemplate.send("auto_topic_test", payload)
 
         with(future) {
 
             val obj = object : ListenableFutureCallback<SendResult<String, BaseIOTSignal>> {
-                override fun onSuccess(@Nullable message: SendResult<String, BaseIOTSignal>?) {
+                override fun onSuccess(message: SendResult<String, BaseIOTSignal>?) {
                     logger.info("Message published with offset: {}", message?.recordMetadata?.offset())
                 }
 
