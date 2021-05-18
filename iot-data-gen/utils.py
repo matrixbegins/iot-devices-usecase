@@ -2,10 +2,11 @@ import random
 
 def ramp_up_linear(x, intercept = 1):
     y = (0.5 * x) + intercept
+    sample = random.uniform(0, 0.25)
     if random.choice(range(0,2)) == 0:
-        return y - y * 0.05
+        return y - y * sample
     else:
-        return y + y * 0.05
+        return y + y * sample
 
 
 def ramp_down_linear(y, percentage=10.00):
@@ -24,24 +25,35 @@ def peak_traffic_gen(y):
 def peak_traffic_negative_gen(y):
     # whatever value we get from we start from 20% less value, then generate new values on top of that
     y = y - y * 0.2
+    sample = random.uniform(0, 0.25)
     if random.choice(range(0,2)) == 0:
-        return y - y * 0.05
+        return y - y * sample
     else:
-        return y + y * 0.05
+        return y + y * sample
 
 
 def constant_traffic_gen(y):
+    sample = random.uniform(0, 0.25)
     if random.choice(range(0,2)) == 0:
-        return y - y * 0.04
+        return y - y * sample
     else:
-        return y + y * 0.04
+        return y + y * sample
 
 
 def exponential_growth(x, initial=10, rate=0.02):
-    return initial * (( 1 + rate ) ** x)
+    pow = x if x < 50 else 50
+    sample = random.uniform(0, 0.25)
+    if random.choice(range(0,2)) == 0:
+        pow = round(pow + pow * sample)
+    else:
+        pow = round(pow - pow * sample)
+
+    return initial * (( 1 + rate ) ** pow)
 
 
 def exponential_decay(x, base=10, rate=0.5):
+    sample = random.uniform(0, 0.25)
+    x = x - x * sample
     return x - ( x * rate )
 
 

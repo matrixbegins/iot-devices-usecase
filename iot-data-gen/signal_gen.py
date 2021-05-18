@@ -131,7 +131,7 @@ def pressure_generator(pattern, interval, timelimit, unit, devices, msgformat, r
                     prompt="Enter total runtime of the task: ")
 def generate_cluster_load(runtime):
     pattern = 'C'   # constant
-    interval = 0.50
+    interval = 0.01
     timelimit = 40
 
     signal_type = 'temperature'

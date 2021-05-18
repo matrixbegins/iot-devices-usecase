@@ -109,7 +109,7 @@ class Producer(threading.Thread):
 
     def publish_message(self, signalVal):
         msg = Message(self.deviceId, signalVal)
-        payload = msg.to_dict() if self.msg_format == 'J' else msg.to_key_value()
+        payload = msg.to_dict() if self.msg_format == 'J' else msg.to_key_value().encode('utf8')
 
         self.producer.send(self.kafka_topic, payload)
         logger.info(f"[{self.producer_id}]:: new event published: %s", payload)
