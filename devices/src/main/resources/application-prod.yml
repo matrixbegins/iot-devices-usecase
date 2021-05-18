@@ -17,25 +17,27 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     new-topic-config:
-      replica-count: 1
-      partition-count: 1
+      replica-count: 3
+      partition-count: 40
     iot-consumer-settings:
-      key-value-consumer-concurrency: 1
-      json-consumer-concurrency: 1
-      device-cluster-concurrency: 1
-      all-signal-concurrency: 1
+      key-value-consumer-concurrency: 4
+      json-consumer-concurrency: 4
+      device-cluster-concurrency: 2
+      all-signal-concurrency: 4
+
       consumer-batch-size-sm: 10
-      consumer-batch-size-md: 10
-      consumer-batch-size-lg: 10
+      consumer-batch-size-md: 500
+      consumer-batch-size-lg: 1000
+
 
 logging:
   level:
     org:
       springframework:
-        web: DEBUG
+        web: INFO
         jdbc:
-          core: DEBUG
-    hat.streaming.devices: DEBUG
+          core: ERROR
+    hat.streaming.devices: INFO
 
 server:
   servlet:

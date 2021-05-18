@@ -19,15 +19,37 @@ import org.springframework.stereotype.Component
 
 @EnableKafka
 @Component
-class KafkaConsumerConfig() {
+class KafkaConsumerConfig {
 
     @Value("\${spring.kafka.bootstrap-servers:}")
     val bootstrapServers: String = ""
 
+    @Value("\${spring.kafka.iot-consumer-settings.key-value-consumer-concurrency:}")
+    val keyValueConcurrency: Int = -10
+
+    @Value("\${spring.kafka.iot-consumer-settings.json-consumer-concurrency:}")
+    val jsonTopicConcurrency: Int = -10
+
+    @Value("\${spring.kafka.iot-consumer-settings.device-cluster-concurrency:}")
+    val clusterTopicConcurrency: Int = -10
+
+    @Value("\${spring.kafka.iot-consumer-settings.all-signal-concurrency:}")
+    val allSignalConcurrency: Int = -10
+
+
+    @Value("\${spring.kafka.iot-consumer-settings.consumer-batch-size-sm:}")
+    val batchSizeSm: String = "10"
+
+    @Value("\${spring.kafka.iot-consumer-settings.consumer-batch-size-md:}")
+    val batchSizeMd: String= "10"
+
+    @Value("\${spring.kafka.iot-consumer-settings.consumer-batch-size-lg:}")
+    val batchSizeLG: String = "10"
+
     private fun getCommonConsumerProps() : MutableMap<String, Any> {
         var config: MutableMap<String, Any> = HashMap()
         config["bootstrap.servers"] = bootstrapServers
-        config["max.poll.records"] = "10"
+        config["max.poll.records"] = batchSizeSm
         config["enable.auto.commit"] = true
         config["auto.offset.reset"] = "earliest"
         config["partition.assignment.strategy"] = "org.apache.kafka.clients.consumer.RoundRobinAssignor"
@@ -42,6 +64,8 @@ class KafkaConsumerConfig() {
         config["value.deserializer"] = StringDeserializer::class.java
         config["group.id"] = "entry_topic_key_value_transformer_consumer"
 
+        config["max.poll.records"] = batchSizeLG
+
         return DefaultKafkaConsumerFactory(config, StringDeserializer(), StringDeserializer())
     }
 
@@ -49,9 +73,9 @@ class KafkaConsumerConfig() {
     fun keyValueEntryTopicContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = entryKeyValueTopicConsumerFactory()
-        factory.containerProperties.ackMode = ContainerProperties.AckMode.BATCH;
+        factory.containerProperties.ackMode = ContainerProperties.AckMode.BATCH
         factory.isBatchListener = true
-        factory.setConcurrency(1);  // run 4 concurrent instances of the factory. That means one group will have 4 consumers
+        factory.setConcurrency(keyValueConcurrency)  // run 4 concurrent instances of the factory. That means one group will have 4 consumers
         return factory
     }
 
@@ -68,6 +92,8 @@ class KafkaConsumerConfig() {
 
         config["group.id"] = "entry_topic_json_transformer_consumer"
 
+        config["max.poll.records"] = batchSizeLG
+
         return DefaultKafkaConsumerFactory(config, StringDeserializer(),
             JsonDeserializer<BaseIOTSignal>(BaseIOTSignal::class.java).ignoreTypeHeaders() )
     }
@@ -78,7 +104,7 @@ class KafkaConsumerConfig() {
         factory.consumerFactory = entryJsonTopicConsumerFactory()
         factory.isBatchListener = true
         factory.containerProperties.ackMode = ContainerProperties.AckMode.BATCH
-        factory.setConcurrency(1);  // run 4 concurrent instances of the factory. That means one group will have 4 consumers
+        factory.setConcurrency(jsonTopicConcurrency)  // run 4 concurrent instances of the factory. That means one group will have 4 consumers
         return factory
     }
 
@@ -95,6 +121,8 @@ class KafkaConsumerConfig() {
 
         config["group.id"] = "device_cluster_data_db_dump_consumer"
 
+        config["max.poll.records"] = batchSizeSm
+
         return DefaultKafkaConsumerFactory(config, StringDeserializer(),
             JsonDeserializer<IOTDeviceSignal>(IOTDeviceSignal::class.java).ignoreTypeHeaders() )
     }
@@ -105,7 +133,7 @@ class KafkaConsumerConfig() {
         factory.consumerFactory = deviceClusterTopicConsumerFactory()
         factory.isBatchListener = true
         factory.containerProperties.ackMode = ContainerProperties.AckMode.BATCH
-        factory.setConcurrency(1);  // run 4 concurrent instances of the factory. That means one group will have 4 consumers
+        factory.setConcurrency(clusterTopicConcurrency)  // run 4 concurrent instances of the factory. That means one group will have 4 consumers
         return factory
     }
 
@@ -120,7 +148,7 @@ class KafkaConsumerConfig() {
         config[JsonDeserializer.VALUE_DEFAULT_TYPE] = "hat.streaming.devices.modules.dto.IOTDeviceSignal"
         config[JsonDeserializer.KEY_DEFAULT_TYPE] = "kotlin.String"
 
-        config["max.poll.records"] = "1000"
+        config["max.poll.records"] = batchSizeLG
         config["group.id"] = "all_signal_type_data_db_dump_consumer"
 
         return DefaultKafkaConsumerFactory(config, StringDeserializer(),
@@ -133,7 +161,7 @@ class KafkaConsumerConfig() {
         factory.consumerFactory = allSignalTypeTopicConsumerFactory()
         factory.isBatchListener = true
         factory.containerProperties.ackMode = ContainerProperties.AckMode.BATCH
-        factory.setConcurrency(1);  // run 4 concurrent instances of the factory. That means one group will have 4 consumers
+        factory.setConcurrency(allSignalConcurrency)  // run 4 concurrent instances of the factory. That means one group will have 4 consumers
         return factory
     }
 
