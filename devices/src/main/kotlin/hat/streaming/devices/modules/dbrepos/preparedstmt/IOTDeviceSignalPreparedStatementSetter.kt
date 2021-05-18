@@ -8,9 +8,9 @@ import java.sql.PreparedStatement
 import java.sql.SQLException
 
 
-class ClusterSignalPreparedStatementSetter(private val signals: List<IOTDeviceSignal>): BatchPreparedStatementSetter {
+class IOTDeviceSignalPreparedStatementSetter(private val signals: List<IOTDeviceSignal>): BatchPreparedStatementSetter {
 
-    val logger: Logger = LoggerFactory.getLogger(ClusterSignalPreparedStatementSetter::class.java)
+    val logger: Logger = LoggerFactory.getLogger(IOTDeviceSignalPreparedStatementSetter::class.java)
 
     override fun setValues(stmt: PreparedStatement, idx: Int) {
         // | (device_id, signal_type, signal_unit, signal_value, device_cluster, org_id, facility_id, device_timestamp,

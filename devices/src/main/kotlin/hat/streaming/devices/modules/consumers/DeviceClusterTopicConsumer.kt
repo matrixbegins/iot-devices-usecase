@@ -1,7 +1,7 @@
 package hat.streaming.devices.modules.consumers
 
 import hat.streaming.devices.modules.dto.IOTDeviceSignal
-import hat.streaming.devices.modules.dbrepos.ClusterDeviceRepo
+import hat.streaming.devices.modules.service.ClusterDeviceDBService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class DeviceClusterTopicConsumer(val clusterDeviceRepo: ClusterDeviceRepo) {
+class DeviceClusterTopicConsumer(val clusterDeviceDBService: ClusterDeviceDBService) {
 
     val logger: Logger = LoggerFactory.getLogger(DeviceClusterTopicConsumer::class.java)
 
@@ -24,7 +24,7 @@ class DeviceClusterTopicConsumer(val clusterDeviceRepo: ClusterDeviceRepo) {
                       , @Header(KafkaHeaders.OFFSET) offsets: List<Long> ): Unit = runBlocking(Dispatchers.Default) {
 
         with(logger) {
-            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
             info("beginning to consume batch size: {} ", deviceSignals.size)
             for (i in deviceSignals.indices) {
                 info(
@@ -33,10 +33,9 @@ class DeviceClusterTopicConsumer(val clusterDeviceRepo: ClusterDeviceRepo) {
                 )
             }
 
-            clusterDeviceRepo.saveClusterDeviceSignals(deviceSignals)
+            clusterDeviceDBService.saveClusterDeviceSignals(deviceSignals)
             info("all batch messages consumed")
         }
 
-//        val result = deviceSignals.map {  }
     }
 }

@@ -23,8 +23,8 @@ class CompromisedMessagesConsumer(val compromisedSignalService: CompromisedSigna
                               , @Header(KafkaHeaders.OFFSET) offsets: List<Long> ): Unit = runBlocking(Dispatchers.Default) {
 
         with(logger) {
-            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
-            info("beginning to process compromised messages : {} ", faultySignals.size);
+            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+            info("beginning to process compromised messages : {} ", faultySignals.size)
 
             for (i in faultySignals.indices) {
                 info(

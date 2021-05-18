@@ -31,13 +31,11 @@ class DeviceSignalMainTopicProducer {
                     logger.info("Message published with offset: {}", message?.recordMetadata?.offset())
                 }
 
-                override fun onFailure(error: Throwable): Unit {
+                override fun onFailure(error: Throwable) {
                     logger.error("Error in publishing message: {}", signal, error)
                 }
             }
             addCallback( obj )
         }
-
     }
-
 }

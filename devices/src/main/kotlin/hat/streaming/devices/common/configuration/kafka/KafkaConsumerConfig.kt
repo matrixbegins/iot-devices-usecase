@@ -51,7 +51,7 @@ class KafkaConsumerConfig() {
         factory.consumerFactory = entryKeyValueTopicConsumerFactory()
         factory.containerProperties.ackMode = ContainerProperties.AckMode.BATCH;
         factory.isBatchListener = true
-        factory.setConcurrency(4);  // run 4 concurrent instances of the factory. That means one group will have 4 consumers
+        factory.setConcurrency(1);  // run 4 concurrent instances of the factory. That means one group will have 4 consumers
         return factory
     }
 
@@ -83,7 +83,7 @@ class KafkaConsumerConfig() {
     }
 
     @Bean
-    fun deviceClusterTopicConsumerFactory(): ConsumerFactory<String?, IOTDeviceSignal?>? { /// wrong data type
+    fun deviceClusterTopicConsumerFactory(): ConsumerFactory<String?, IOTDeviceSignal?>? {
         val config: MutableMap<String, Any> = getCommonConsumerProps()
 
         config[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = ErrorHandlingDeserializer::class.java
@@ -103,6 +103,34 @@ class KafkaConsumerConfig() {
     fun deviceClusterContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, IOTDeviceSignal> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, IOTDeviceSignal>()
         factory.consumerFactory = deviceClusterTopicConsumerFactory()
+        factory.isBatchListener = true
+        factory.containerProperties.ackMode = ContainerProperties.AckMode.BATCH
+        factory.setConcurrency(1);  // run 4 concurrent instances of the factory. That means one group will have 4 consumers
+        return factory
+    }
+
+    @Bean
+    fun allSignalTypeTopicConsumerFactory(): ConsumerFactory<String?, IOTDeviceSignal?>? {
+        val config: MutableMap<String, Any> = getCommonConsumerProps()
+
+        config[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = ErrorHandlingDeserializer::class.java
+        config[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = ErrorHandlingDeserializer::class.java
+        config[ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS] = StringOrBytesSerializer::class.java
+        config[ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS] =  JsonDeserializer::class.java
+        config[JsonDeserializer.VALUE_DEFAULT_TYPE] = "hat.streaming.devices.modules.dto.IOTDeviceSignal"
+        config[JsonDeserializer.KEY_DEFAULT_TYPE] = "kotlin.String"
+
+        config["max.poll.records"] = "1000"
+        config["group.id"] = "all_signal_type_data_db_dump_consumer"
+
+        return DefaultKafkaConsumerFactory(config, StringDeserializer(),
+            JsonDeserializer<IOTDeviceSignal>(IOTDeviceSignal::class.java).ignoreTypeHeaders() )
+    }
+
+    @Bean
+    fun allSignalTypeContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, IOTDeviceSignal> {
+        val factory = ConcurrentKafkaListenerContainerFactory<String, IOTDeviceSignal>()
+        factory.consumerFactory = allSignalTypeTopicConsumerFactory()
         factory.isBatchListener = true
         factory.containerProperties.ackMode = ContainerProperties.AckMode.BATCH
         factory.setConcurrency(1);  // run 4 concurrent instances of the factory. That means one group will have 4 consumers

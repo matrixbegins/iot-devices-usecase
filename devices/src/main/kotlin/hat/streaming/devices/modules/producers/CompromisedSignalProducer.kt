@@ -13,7 +13,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback
 @Service
 class CompromisedSignalProducer {
 
-    private val TAMPERED_TOPIC_NAME = "tampered_signals_topic_signals_topic"
+    private val TAMPERED_TOPIC_NAME = "tampered_signals_topic"
 
     @Autowired
     lateinit var baseSignalTemplate: KafkaTemplate<String, BaseIOTSignal>
@@ -32,7 +32,7 @@ class CompromisedSignalProducer {
                     logger.info("Message published with offset: {}", message?.recordMetadata?.offset())
                 }
 
-                override fun onFailure(error: Throwable): Unit {
+                override fun onFailure(error: Throwable) {
                     logger.error("Error in publishing message: {}", signal, error)
                 }
             }

@@ -25,8 +25,8 @@ class FaultyMessagesConsumer(val faultySignalService: FaultySignalService) {
         Dispatchers.Default) {
 
         with(logger) {
-            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
-            info("beginning process faulty messages : {} ", faultySignals.size);
+            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+            info("beginning process faulty messages : {} ", faultySignals.size)
 
             for (i in faultySignals.indices) {
                 info(

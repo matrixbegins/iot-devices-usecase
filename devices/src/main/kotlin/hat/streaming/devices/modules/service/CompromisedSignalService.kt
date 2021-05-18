@@ -21,11 +21,12 @@ class CompromisedSignalService(private val jdbcTemplate: JdbcTemplate? = null,
     suspend fun saveSignals(signals: List<BaseIOTSignal>): Unit {
         // save array of this data into db
         val insertSQL = """ INSERT INTO devices.compromised_signals 
-            | (device_id, signal_type, signal_value, message_digest, device_timestamp, reported_year, reported_month, reported_day, reported_hour, reported_minute, reported_sec)
+            | (device_id, signal_type, signal_value, message_digest, device_timestamp, reported_year, 
+            | reported_month, reported_day, reported_hour, reported_minute, reported_sec, created_at)
             | VALUES (?,    ?,          ?,                  ?,      to_timestamp(? /1000),            
             | date_part('year', to_timestamp(? / 1000)) , date_part('month', to_timestamp(? / 1000)),              
             | date_part('day', to_timestamp(? / 1000)), date_part('hour', to_timestamp(? / 1000)),
-            | date_part('minute', to_timestamp(? / 1000)), date_part('second', to_timestamp(? / 1000)) )
+            | date_part('minute', to_timestamp(? / 1000)), date_part('second', to_timestamp(? / 1000)), now() ) ON CONFLICT DO NOTHING;
         """.trimMargin()
 
         runBatchInsert(signals, insertSQL)

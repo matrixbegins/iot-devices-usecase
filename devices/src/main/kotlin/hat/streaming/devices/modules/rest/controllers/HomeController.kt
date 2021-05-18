@@ -126,7 +126,7 @@ class HomeController(val deviceTypeRepo: DeviceTypeRepo,
     @GetMapping("/send/signal/temperature/json")
     fun sendJsonTemperatureDeviceSignal(): MsgResponse = runBlocking(Dispatchers.Default)  {
 
-        val payload = BaseIOTSignal(178.00, "TPDSG56GFBD", System.currentTimeMillis(), "sdbfvkjdf565kjvndjkvn2dfbirbavadve65")
+        val payload = BaseIOTSignal(300.00, "JWWMFAJQ8B", System.currentTimeMillis(), "sdbfvkjdf565kjvndjkvn2dfbirbavadve65")
 
         baseSignalTemplate.send("device_events_entry_json", payload)
 

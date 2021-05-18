@@ -1,12 +1,9 @@
 package hat.streaming.devices.modules.consumers
 
-import hat.streaming.devices.modules.consumers.common.DeviceInfoService
 import hat.streaming.devices.modules.consumers.transformers.KeyValueMessageParser
-import hat.streaming.devices.modules.dto.IOTDeviceSignal
-import hat.streaming.devices.modules.producers.CompromisedSignalProducer
-import hat.streaming.devices.modules.producers.DeviceSignalMainTopicProducer
-import hat.streaming.devices.modules.producers.FaultySignalProducer
+import hat.streaming.devices.modules.service.IOTSignalProcessorService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -18,12 +15,8 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class KeyValueFormatEntryTopicConsumer (val deviceInfoService: DeviceInfoService,
-                                        val faultyProducer: FaultySignalProducer,
-                                        val compromisedProducer: CompromisedSignalProducer,
-                                        val mainProducer: DeviceSignalMainTopicProducer,
-                                        val parser: KeyValueMessageParser
-) {
+class KeyValueFormatEntryTopicConsumer (val parser: KeyValueMessageParser,
+                                        val processorService: IOTSignalProcessorService) {
 
     val logger: Logger = LoggerFactory.getLogger(KeyValueFormatEntryTopicConsumer::class.java)
 
@@ -44,33 +37,10 @@ class KeyValueFormatEntryTopicConsumer (val deviceInfoService: DeviceInfoService
 //        logger.info("all batch messages consumed")
 
         deviceSignals.forEach { signalStr ->
-            // get device Info of the signal
+            // convert string message to BaseIOTSignal
             val signal = parser.parseKeyValueMessage(signalStr)
-            val deviceInfo = run {
-                logger.info("getting device info from Device service= {} ", signal.deviceId)
-                return@run deviceInfoService.getDeviceInfo(signal.deviceId.toString())
-            }
-            signal.signalType = deviceInfo.signalType
-            // check if signal is faulty
-            if(signal.signalValue < deviceInfo.signalMinValue || signal.signalValue > deviceInfo.signalMaxValue) {
-                // push data to faulty signal topic
-                logger.info("Device signal is faulty= {}", signal)
-                faultyProducer.publishFaultySignal(signal)
-                return@forEach
-            }
-            // check if signal is compromised.
-            if(!signal.validateMessageDigest()) {
-                // push data to compromised signal topic
-                logger.info("Device signal is compromised= {}", signal)
-                compromisedProducer.publishCompromisedSignal(signal)
-                return@forEach
-            }
-
-            // we have a valid signal. Push it to relevant signalType topic
-            val iotSignal = IOTDeviceSignal(deviceInfo, signal)
-//            logger.info("publishing to device signal type topic= {}")
-            mainProducer.publishIOTSignal(iotSignal)
+            // process message
+            launch { processorService.processIOTSignal(signal) }
         }
-
     }
 }

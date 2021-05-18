@@ -13,7 +13,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback
 @Service
 class FaultySignalProducer {
 
-    private val FAULTY_TOPIC_NAME = "tampered_signals_topic"
+    private val FAULTY_TOPIC_NAME = "faulty_signals_topic"
 
     @Autowired
     lateinit var baseSignalTemplate: KafkaTemplate<String, BaseIOTSignal>
