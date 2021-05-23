@@ -124,7 +124,24 @@ CREATE INDEX compromised_signals_idx_signal_type ON devices.compromised_signals 
 
 
 -- new table device_cluster_metric_tracker
-CREATE TABLE devices.device_cluster_metric_tracker AS SELECT * FROM devices.signal_type_metric_template;
+CREATE TABLE IF NOT EXISTS devices.device_cluster_metric_tracker (
+    device_id varchar(50) NOT NULL,
+    signal_type varchar(50) NOT NULL,
+    signal_unit varchar(50) NOT NULL,
+    signal_value NUMERIC(10,4) NOT NULL,
+    device_cluster varchar(50) NOT NULL,
+    org_id varchar(50) NOT NULL,
+    facility_id varchar(50) NOT NULL,
+    device_timestamp timestamp NOT NULL,
+    reported_year SMALLINT NOT NULL,
+	reported_month SMALLINT NOT NULL,
+	reported_day SMALLINT NOT NULL,
+	reported_hour SMALLINT NOT NULL,
+	reported_minute SMALLINT NOT NULL,
+	reported_sec SMALLINT NOT NULL,
+    created_at timestamp  DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    PRIMARY KEY (device_id, created_at)
+);
 
 CREATE INDEX device_cluster_metric_tracker_idx_cluster ON devices.device_cluster_metric_tracker USING BTREE (device_cluster);
 CREATE INDEX device_cluster_metric_tracker_idx_org_id ON devices.device_cluster_metric_tracker USING BTREE (org_id);
@@ -139,7 +156,9 @@ CREATE INDEX device_cluster_metric_tracker_idx_reported_sec ON devices.device_cl
 
 CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
 
-SELECT create_hypertable('devices.compromised_signals', 'created_at' );
-SELECT create_hypertable('devices.faulty_signals', 'created_at');
-SELECT create_hypertable('devices.device_cluster_metric_tracker', 'created_at');
+SELECT public.create_hypertable('devices.compromised_signals', 'created_at' );
+SELECT public.create_hypertable('devices.faulty_signals', 'created_at');
+SELECT public.create_hypertable('devices.device_cluster_metric_tracker', 'created_at');
+
+
 
