@@ -1,6 +1,7 @@
 package hat.streaming.devices.modules.consumers
 
 import hat.streaming.devices.modules.dto.BaseIOTSignal
+import hat.streaming.devices.modules.producers.DeviceSignalMainTopicProducer
 import hat.streaming.devices.modules.service.IOTSignalProcessorService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +16,8 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class JsonFormatEntryTopicConsumer(val processorService: IOTSignalProcessorService ) {
+class JsonFormatEntryTopicConsumer(val processorService: IOTSignalProcessorService,
+                                   val mainProducerService: DeviceSignalMainTopicProducer) {
 
     val logger: Logger = LoggerFactory.getLogger(JsonFormatEntryTopicConsumer::class.java)
 

@@ -38,4 +38,8 @@ class DeviceSignalMainTopicProducer {
             addCallback( obj )
         }
     }
+
+    suspend fun flushProducer(): Unit {
+        producerTemplate.flush()
+    }
 }

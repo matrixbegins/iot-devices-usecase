@@ -29,14 +29,14 @@ class ClusterDeviceDBService(private val jdbcTemplate: JdbcTemplate? = null) {
 
         runBatchInsert(signals, insertSQL)
 
-        logger.info("batch Insert complete....")
+        logger.debug("batch Insert complete....")
     }
 
     private suspend fun runBatchInsert(signals: List<IOTDeviceSignal>, sql: String): Job {
         return coroutineScope {
             launch(Dispatchers.Default) {
                 jdbcTemplate!!.batchUpdate(sql, IOTDeviceSignalPreparedStatementSetter(signals))
-                logger.info("batch Insert inside co routine ....")
+                logger.debug("batch Insert inside co routine ....")
             }
         }
     }
