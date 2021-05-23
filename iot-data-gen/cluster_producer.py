@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from config import brokers_config, topic_config
 from cluster_message import ClusterMessage
 from device_inventory import signal_pattern_time_durations, signal_thresholds
-from utils import ramp_up_linear, ramp_down_linear, peak_traffic_gen, constant_traffic_gen, pattern_func_map, generate_faulty_signal
+from utils import peak_traffic_gen, constant_traffic_gen, pattern_func_map, generate_faulty_signal
 
 logger = logging.getLogger("ClusterProducer")
 logger.setLevel(logging.DEBUG)

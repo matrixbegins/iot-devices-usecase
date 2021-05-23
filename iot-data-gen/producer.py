@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from config import brokers_config, topic_config
 from message import Message
 from device_inventory import signal_pattern_time_durations, signal_thresholds
-from utils import ramp_up_linear, ramp_down_linear, peak_traffic_gen, constant_traffic_gen, pattern_func_map
+from utils import peak_traffic_gen, constant_traffic_gen, pattern_func_map
 
 
 logger = logging.getLogger("Producer")

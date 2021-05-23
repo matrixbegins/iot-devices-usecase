@@ -1,6 +1,6 @@
 brokers_config = {
     'local': 'localhost:9092',
-    'prod': ['kafka-0:9092', 'kafka-2:9092', 'kafka-2:9092']
+    'prod': ['broker1.zeusiot.internal:9092']
 }
 
 topic_config = {

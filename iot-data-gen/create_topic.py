@@ -13,11 +13,24 @@ def create_kafka_topic():
         print("connecting to broker:: ", broker)
         admin = KafkaAdminClient(bootstrap_servers=broker)
 
-        topic_new_txn = NewTopic(name='real_txn_created',
-                        num_partitions=5, replication_factor=1, topic_configs={'retention.ms': 8640000000} )
-        # topic_update_txn = NewTopic(name='real_txn_updated',
-        #                 num_partitions=1, replication_factor=1, topic_configs={'retention.ms': 8640000000})
-        admin.create_topics([topic_new_txn])
+        topic_entry_json = NewTopic(name='device_events_entry_json',
+                        num_partitions=52, replication_factor=2, topic_configs={'retention.ms': 8640000000} )
+
+        topic_entry_kv = NewTopic(name='device_events_entry_key_value',
+                        num_partitions=52, replication_factor=2, topic_configs={'retention.ms': 8640000000})
+
+        topic_tampred = NewTopic(name='tampered_signals_topic',
+                        num_partitions=20, replication_factor=2, topic_configs={'retention.ms': 8640000000})
+
+        topic_device_cluster = NewTopic(name='device_cluster_faulty_topic',
+                        num_partitions=5, replication_factor=2, topic_configs={'retention.ms': 8640000000})
+
+        topic_faulty = NewTopic(name='faulty_signals_topic',
+                        num_partitions=32, replication_factor=2, topic_configs={'retention.ms': 8640000000})
+
+
+        admin.create_topics([topic_entry_json, topic_entry_kv, topic_tampred, topic_device_cluster, topic_faulty])
+
     except Exception as err:
         print("\n kafka topic creation error .....", err)
         traceback.print_exception(None, err, err.__traceback__)
@@ -28,5 +41,4 @@ def create_kafka_topic():
 if __name__ == "__main__":
     create_kafka_topic()
     print("\n\n TOPIC Created !!!")
-
 

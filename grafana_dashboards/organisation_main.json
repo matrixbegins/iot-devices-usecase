@@ -1,0 +1,735 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 0,
+    "id": 3,
+    "iteration": 1621792651180,
+    "links": [],
+    "panels": [
+      {
+        "collapsed": false,
+        "datasource": null,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 2,
+        "panels": [],
+        "repeat": "organization",
+        "scopedVars": {
+          "organization": {
+            "selected": true,
+            "text": "GAS-INC",
+            "value": "GAS-INC"
+          }
+        },
+        "title": "Device Summary",
+        "type": "row"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 0,
+          "y": 1
+        },
+        "id": 4,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "7.5.6",
+        "scopedVars": {
+          "organization": {
+            "selected": true,
+            "text": "GAS-INC",
+            "value": "GAS-INC"
+          }
+        },
+        "targets": [
+          {
+            "format": "table",
+            "group": [
+              {
+                "params": [
+                  "$__interval",
+                  "none"
+                ],
+                "type": "time"
+              }
+            ],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT\n  count(device_id) AS \"device_id\"\nFROM devices.device_info\nWHERE\n  org_id IN ($organization) AND facility_id IN ($facility)\n  \n  \n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "device_id"
+                  ],
+                  "type": "column"
+                },
+                {
+                  "params": [
+                    "count"
+                  ],
+                  "type": "aggregate"
+                },
+                {
+                  "params": [
+                    "device_id"
+                  ],
+                  "type": "alias"
+                }
+              ]
+            ],
+            "table": "devices.device_info",
+            "timeColumn": "created_at",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              },
+              {
+                "datatype": "varchar",
+                "name": "",
+                "params": [
+                  "org_id",
+                  "IN",
+                  "$organization"
+                ],
+                "type": "expression"
+              },
+              {
+                "datatype": "varchar",
+                "name": "",
+                "params": [
+                  "facility_id",
+                  "IN",
+                  "$facility"
+                ],
+                "type": "expression"
+              }
+            ]
+          }
+        ],
+        "title": "Total Devices: $organization",
+        "type": "stat"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 4,
+          "y": 1
+        },
+        "id": 10,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "7.5.6",
+        "scopedVars": {
+          "organization": {
+            "selected": true,
+            "text": "GAS-INC",
+            "value": "GAS-INC"
+          }
+        },
+        "targets": [
+          {
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT COUNT(DISTINCT(main.device_id)) FROM (\n\tselect device_id from devices.compromised_signals WHERE $__timeFilter(created_at)\n\tUNION\n\tselect device_id from devices.pressure_metric_tracker WHERE $__timeFilter(created_at)\n\tUNION\n\tselect device_id from devices.temperature_metric_tracker WHERE $__timeFilter(created_at)\n) as main INNER JOIN devices.device_info as di ON di.device_id = main.device_id WHERE org_id IN ($organization)\n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "value"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "timeColumn": "time",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Reporting Devices: $organization",
+        "type": "stat"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 8,
+          "y": 1
+        },
+        "id": 18,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "7.5.6",
+        "scopedVars": {
+          "organization": {
+            "selected": true,
+            "text": "GAS-INC",
+            "value": "GAS-INC"
+          }
+        },
+        "targets": [
+          {
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select COUNT(1) as signal_count from devices.compromised_signals as comp INNER JOIN devices.device_info di ON di.device_id = comp.device_id\nWHERE $__timeFilter(comp.created_at) AND di.org_id IN ($organization)",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "value"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "timeColumn": "time",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Compromised Messages: $organization",
+        "type": "stat"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 12,
+          "y": 1
+        },
+        "id": 27,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "7.5.6",
+        "scopedVars": {
+          "organization": {
+            "selected": true,
+            "text": "GAS-INC",
+            "value": "GAS-INC"
+          }
+        },
+        "targets": [
+          {
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select COUNT(DISTINCT(comp.device_id)) from devices.compromised_signals as comp \nINNER JOIN devices.device_info di ON di.device_id = comp.device_id WHERE $__timeFilter(comp.created_at) AND di.org_id IN ($organization)",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "value"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "timeColumn": "time",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Compromised Devices: $organization",
+        "type": "stat"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 16,
+          "y": 1
+        },
+        "id": 39,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "7.5.6",
+        "scopedVars": {
+          "organization": {
+            "selected": true,
+            "text": "GAS-INC",
+            "value": "GAS-INC"
+          }
+        },
+        "targets": [
+          {
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select COUNT(1) as signal_count from devices.faulty_signals as flt INNER JOIN devices.device_info di ON di.device_id = flt.device_id\nWHERE $__timeFilter(flt.created_at) AND di.org_id IN ($organization)\n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "value"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "timeColumn": "time",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Faulty Messages: $organization",
+        "type": "stat"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 20,
+          "y": 1
+        },
+        "id": 40,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "7.5.6",
+        "scopedVars": {
+          "organization": {
+            "selected": true,
+            "text": "GAS-INC",
+            "value": "GAS-INC"
+          }
+        },
+        "targets": [
+          {
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select COUNT(DISTINCT(flt.device_id)) as signal_count from devices.faulty_signals as flt INNER JOIN devices.device_info di ON di.device_id = flt.device_id\nWHERE $__timeFilter(flt.created_at) AND di.org_id IN ($organization)",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "value"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "timeColumn": "time",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Faulty Devices: $organization",
+        "type": "stat"
+      }
+    ],
+    "refresh": false,
+    "schemaVersion": 27,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "allValue": "All Organizations",
+          "current": {
+            "selected": false,
+            "text": "GAS-INC",
+            "value": "GAS-INC"
+          },
+          "datasource": null,
+          "definition": "SELECT DISTINCT(org_id) FROM devices.device_info",
+          "description": null,
+          "error": null,
+          "hide": 0,
+          "includeAll": false,
+          "label": "Organization",
+          "multi": true,
+          "name": "organization",
+          "options": [],
+          "query": "SELECT DISTINCT(org_id) FROM devices.device_info",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tags": [],
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "allValue": "All Facilities",
+          "current": {
+            "selected": true,
+            "text": [
+              "Metropolis"
+            ],
+            "value": [
+              "Metropolis"
+            ]
+          },
+          "datasource": null,
+          "definition": "SELECT DISTINCT(facility_id) from devices.device_info WHERE org_id IN( $organization )",
+          "description": null,
+          "error": null,
+          "hide": 0,
+          "includeAll": false,
+          "label": "Facility",
+          "multi": true,
+          "name": "facility",
+          "options": [
+            {
+              "selected": true,
+              "text": "Atlanta",
+              "value": "Atlanta"
+            },
+            {
+              "selected": true,
+              "text": "Boston",
+              "value": "Boston"
+            },
+            {
+              "selected": true,
+              "text": "Chicago",
+              "value": "Chicago"
+            },
+            {
+              "selected": true,
+              "text": "Dallas",
+              "value": "Dallas"
+            },
+            {
+              "selected": true,
+              "text": "LA",
+              "value": "LA"
+            },
+            {
+              "selected": true,
+              "text": "LV",
+              "value": "LV"
+            },
+            {
+              "selected": true,
+              "text": "Metropolis",
+              "value": "Metropolis"
+            },
+            {
+              "selected": true,
+              "text": "Nashville",
+              "value": "Nashville"
+            },
+            {
+              "selected": true,
+              "text": "Phoenix",
+              "value": "Phoenix"
+            },
+            {
+              "selected": true,
+              "text": "Portland",
+              "value": "Portland"
+            },
+            {
+              "selected": true,
+              "text": "SANF",
+              "value": "SANF"
+            },
+            {
+              "selected": true,
+              "text": "SANJ",
+              "value": "SANJ"
+            }
+          ],
+          "query": "SELECT DISTINCT(facility_id) from devices.device_info WHERE org_id IN( $organization )",
+          "refresh": 0,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tags": [],
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        }
+      ]
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Organization wise Overview",
+    "uid": "2GHvUo3Mz",
+    "version": 14
+  }
