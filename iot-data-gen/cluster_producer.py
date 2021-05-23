@@ -117,4 +117,4 @@ class ClusterProducer(threading.Thread):
         payload = msg.to_dict() if self.msg_format == 'J' else msg.to_key_value()
 
         self.producer.send(self.kafka_topic, payload)
-        logger.info(f"[{self.producer_id}]:: new event published: %s", payload)
+        # logger.info(f"[{self.producer_id}]:: new event published: %s", payload)
