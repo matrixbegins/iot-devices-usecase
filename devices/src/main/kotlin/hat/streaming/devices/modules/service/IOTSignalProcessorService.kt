@@ -23,14 +23,14 @@ class IOTSignalProcessorService(val deviceInfoService: DeviceInfoService,
     suspend fun processIOTSignal(signal: BaseIOTSignal): Unit {
 
         val deviceInfo = run {
-            logger.info("getting device info from Device service= {} ", signal.deviceId)
+            logger.debug("getting device info from Device service= {} ", signal.deviceId)
             return@run deviceInfoService.getDeviceInfo(signal.deviceId.toString())
         }
         signal.signalType = deviceInfo.signalType
         // check if signal is compromised.
         if(!signal.validateMessageDigest()) {
             // push data to compromised signal topic
-            logger.info("Device signal is compromised= {}", signal)
+            logger.debug("Device signal is compromised= {}", signal)
             compromisedProducer.publishCompromisedSignal(signal)
             return
         }
@@ -38,7 +38,7 @@ class IOTSignalProcessorService(val deviceInfoService: DeviceInfoService,
         // check if signal is faulty
         if(signal.signalValue < deviceInfo.signalMinValue || signal.signalValue > deviceInfo.signalMaxValue) {
             // push data to faulty signal topic
-            logger.info("Device signal is faulty= {}", signal)
+            logger.debug("Device signal is faulty= {}", signal)
             faultyProducer.publishFaultySignal(signal)
 
         }

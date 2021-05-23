@@ -63,7 +63,7 @@ class AllSignalDBService(private val jdbcTemplate: JdbcTemplate? = null) {
         return coroutineScope {
             launch(Dispatchers.Default) {
                 jdbcTemplate!!.batchUpdate(sql, IOTDeviceSignalPreparedStatementSetter(signals))
-                logger.info("batch Insert inside co routine ....")
+                logger.debug("batch Insert inside co routine ....")
             }
         }
     }
@@ -102,7 +102,7 @@ class AllSignalDBService(private val jdbcTemplate: JdbcTemplate? = null) {
             }
         }
 
-        logger.info("batch Insert complete....")
+        logger.debug("batch Insert complete....")
     }
 
     fun createSignalMetricTrackerTable(signalType: String): Boolean {
@@ -110,9 +110,9 @@ class AllSignalDBService(private val jdbcTemplate: JdbcTemplate? = null) {
         val createTableSQL = getCreateSignalMetricTrackerTableSQL(signalType)
         val indexSQL = getCreateSignalMetricTrackerIndexSQLs(signalType)
 
-        logger.info("creating table for Metric= {}", signalType )
-        logger.info("table SQL= {}", createTableSQL  )
-        logger.info("table indexes SQL= {}", indexSQL  )
+        logger.debug("creating table for Metric= {}", signalType )
+        logger.debug("table SQL= {}", createTableSQL  )
+        logger.debug("table indexes SQL= {}", indexSQL  )
         jdbcTemplate?.execute(createTableSQL)
         jdbcTemplate?.execute(indexSQL)
         createHyperTable(signalType)
@@ -124,7 +124,7 @@ class AllSignalDBService(private val jdbcTemplate: JdbcTemplate? = null) {
         try{
             val sql = "SELECT public.create_hypertable('devices.##table_name##_metric_tracker'::regclass, 'created_at'::name, if_not_exists => TRUE );"
             jdbcTemplate?.execute(sql.replace("##table_name##", signalType))
-            logger.info("hyper table created= {}", sql )
+            logger.debug("hyper table created= {}", sql )
             return true
 
         }catch(ex: Exception) {

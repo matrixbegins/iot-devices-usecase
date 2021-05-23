@@ -31,14 +31,14 @@ class CompromisedSignalService(private val jdbcTemplate: JdbcTemplate? = null,
 
         runBatchInsert(signals, insertSQL)
 
-        logger.info("batch Insert complete....")
+//        logger.info("batch Insert complete....")
     }
 
     private suspend fun runBatchInsert(signals: List<BaseIOTSignal>, sql: String): Job {
         return coroutineScope {
             launch(Dispatchers.Default) {
                 jdbcTemplate!!.batchUpdate(sql, CompromisedPreparedStatementSetter(signals))
-                logger.info("batch Insert inside co routine ....")
+//                logger.info("batch Insert inside co routine ....")
             }
         }
     }

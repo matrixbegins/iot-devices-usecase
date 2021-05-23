@@ -40,7 +40,7 @@ class KeyValueFormatEntryTopicConsumer (val parser: KeyValueMessageParser,
             // convert string message to BaseIOTSignal
             val signal = parser.parseKeyValueMessage(signalStr)
             // process message
-            launch { processorService.processIOTSignal(signal) }
+            launch(Dispatchers.IO) { processorService.processIOTSignal(signal) }
         }
     }
 }

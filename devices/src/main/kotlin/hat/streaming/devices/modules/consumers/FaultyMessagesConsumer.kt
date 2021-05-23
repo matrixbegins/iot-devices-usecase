@@ -3,6 +3,7 @@ package hat.streaming.devices.modules.consumers
 import hat.streaming.devices.modules.dto.BaseIOTSignal
 import hat.streaming.devices.modules.service.FaultySignalService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -25,19 +26,20 @@ class FaultyMessagesConsumer(val faultySignalService: FaultySignalService) {
         Dispatchers.Default) {
 
         with(logger) {
-            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
-            info("beginning process faulty messages : {} ", faultySignals.size)
+//            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+//            info("beginning process faulty messages : {} ", faultySignals.size)
+//
+//            for (i in faultySignals.indices) {
+//                info(
+//                    "received message='{}' partition={}, offset= {} at kafka timestamp = {} ",
+//                    faultySignals[i],
+//                    partitions[i].toString(),
+//                    offsets[i],
+//                    kafkaTimestamp[i].toString()
+//                )
+//            }
 
-            for (i in faultySignals.indices) {
-                info(
-                    "received message='{}' partition={}, offset= {} at kafka timestamp = {} ",
-                    faultySignals[i],
-                    partitions[i].toString(),
-                    offsets[i],
-                    kafkaTimestamp[i].toString()
-                )
-            }
-            faultySignalService.saveSignals(faultySignals)
+            launch(Dispatchers.IO)  { faultySignalService.saveSignals(faultySignals) }
             info("faulty messages processed")
         }
     }

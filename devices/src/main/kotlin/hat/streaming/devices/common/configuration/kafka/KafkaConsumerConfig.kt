@@ -121,7 +121,7 @@ class KafkaConsumerConfig {
 
         config["group.id"] = "device_cluster_data_db_dump_consumer"
 
-        config["max.poll.records"] = batchSizeSm
+        config["max.poll.records"] = batchSizeLG
 
         return DefaultKafkaConsumerFactory(config, StringDeserializer(),
             JsonDeserializer<IOTDeviceSignal>(IOTDeviceSignal::class.java).ignoreTypeHeaders() )

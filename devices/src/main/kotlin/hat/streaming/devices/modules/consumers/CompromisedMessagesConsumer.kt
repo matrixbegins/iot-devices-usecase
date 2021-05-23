@@ -3,6 +3,7 @@ package hat.streaming.devices.modules.consumers
 import hat.streaming.devices.modules.dto.BaseIOTSignal
 import hat.streaming.devices.modules.service.CompromisedSignalService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,18 +24,18 @@ class CompromisedMessagesConsumer(val compromisedSignalService: CompromisedSigna
                               , @Header(KafkaHeaders.OFFSET) offsets: List<Long> ): Unit = runBlocking(Dispatchers.Default) {
 
         with(logger) {
-            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
-            info("beginning to process compromised messages : {} ", faultySignals.size)
-
-            for (i in faultySignals.indices) {
-                info(
-                    "received message='{}' partition={}, offset= {} ",
-                    faultySignals[i],
-                    partitions[i].toString(),
-                    offsets[i]
-                )
-            }
-            compromisedSignalService.saveSignals(faultySignals)
+//            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+//            info("beginning to process compromised messages : {} ", faultySignals.size)
+//
+//            for (i in faultySignals.indices) {
+//                info(
+//                    "received message='{}' partition={}, offset= {} ",
+//                    faultySignals[i],
+//                    partitions[i].toString(),
+//                    offsets[i]
+//                )
+//            }
+            launch(Dispatchers.IO) { compromisedSignalService.saveSignals(faultySignals) }
             info("compromised messages processed")
         }
     }

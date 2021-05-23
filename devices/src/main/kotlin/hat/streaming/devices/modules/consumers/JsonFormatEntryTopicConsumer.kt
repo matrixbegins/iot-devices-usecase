@@ -36,9 +36,6 @@ class JsonFormatEntryTopicConsumer(val processorService: IOTSignalProcessorServi
 //            info("all batch messages consumed")
 //        }
 
-        deviceSignals.forEach { signal -> launch { processorService.processIOTSignal(signal) } }
-
+        deviceSignals.forEach { signal -> launch(Dispatchers.IO) { processorService.processIOTSignal(signal) } }
     }
-
-
 }

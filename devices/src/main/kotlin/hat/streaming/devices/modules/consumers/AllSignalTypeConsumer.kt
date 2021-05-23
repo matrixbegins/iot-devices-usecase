@@ -26,25 +26,25 @@ class AllSignalTypeConsumer(val allSignalDBService: AllSignalDBService) {
                               , @Header(KafkaHeaders.RECEIVED_TOPIC) topics: List<String> ): Unit = runBlocking(
         Dispatchers.Default) {
 
-        with(logger) {
-            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
-            info("beginning process metric tracker messages : {} ", signals.size)
-
-            for (i in signals.indices) {
-                info(
-                    "received message='{}' partition={}, offset= {} at kafka topic = {} ",
-                    signals[i],
-                    partitions[i].toString(),
-                    offsets[i],
-                    topics[i]
-                )
-            }
-            info("metric tracker messages processed")
-        }
+//        with(logger) {
+//            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+//            info("beginning process metric tracker messages : {} ", signals.size)
+//
+//            for (i in signals.indices) {
+//                info(
+//                    "received message='{}' partition={}, offset= {} at kafka topic = {} ",
+//                    signals[i],
+//                    partitions[i].toString(),
+//                    offsets[i],
+//                    topics[i]
+//                )
+//            }
+//            info("metric tracker messages processed")
+//        }
 
         val signalMap = signals.groupBy { it.signalType }
         for ((signalType, signalSubset) in signalMap) {
-            launch { allSignalDBService.saveMetricTrackerSignals(signalType.toString(), signalSubset) }
+            launch(Dispatchers.IO) { allSignalDBService.saveMetricTrackerSignals(signalType.toString(), signalSubset) }
         }
     }
 

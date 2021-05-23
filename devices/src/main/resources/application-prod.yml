@@ -1,13 +1,13 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/iot_devices_db?currentSchema=devices
-    username: 'ankurpandey'
-    password: ''
+    url: jdbc:postgresql://database.zeusiot.internal:5432/iot_devices_db?currentSchema=devices
+    username: 'root'
+    password: 'root'
     platform: postgresql
     hikari:
       idle-timeout: 10000
-      maximum-pool-size: 10
+      maximum-pool-size: 20
       minimum-idle: 5
       pool-name: MainHikariPool
       data-source-properties:
@@ -15,15 +15,15 @@ spring:
         rewriteBatchedStatements: true
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: broker1.zeusiot.internal:9092
     new-topic-config:
       replica-count: 3
       partition-count: 40
     iot-consumer-settings:
-      key-value-consumer-concurrency: 4
-      json-consumer-concurrency: 4
-      device-cluster-concurrency: 2
-      all-signal-concurrency: 4
+      key-value-consumer-concurrency: 8
+      json-consumer-concurrency: 8
+      device-cluster-concurrency: 4
+      all-signal-concurrency: 8
 
       consumer-batch-size-sm: 10
       consumer-batch-size-md: 500
