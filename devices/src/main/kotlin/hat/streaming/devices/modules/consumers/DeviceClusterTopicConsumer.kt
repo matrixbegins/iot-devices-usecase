@@ -24,7 +24,7 @@ class DeviceClusterTopicConsumer(val clusterDeviceDBService: ClusterDeviceDBServ
                       , @Header(KafkaHeaders.RECEIVED_PARTITION_ID) partitions: List<Int>
                       , @Header(KafkaHeaders.OFFSET) offsets: List<Long> ): Unit = runBlocking(Dispatchers.Default) {
 
-        with(logger) {
+//        with(logger) {
 //            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
 //            info("beginning to consume batch size: {} ", deviceSignals.size)
 //            for (i in deviceSignals.indices) {
@@ -33,11 +33,10 @@ class DeviceClusterTopicConsumer(val clusterDeviceDBService: ClusterDeviceDBServ
 //                    ,partitions[i].toString(), offsets[i]
 //                )
 //            }
+//        }
 
-            launch(Dispatchers.IO) { clusterDeviceDBService.saveClusterDeviceSignals(deviceSignals) }
-
-            info("all batch messages consumed")
-        }
+        launch(Dispatchers.IO) { clusterDeviceDBService.saveClusterDeviceSignals(deviceSignals) }
+        logger.debug("all batch messages consumed")
 
     }
 }

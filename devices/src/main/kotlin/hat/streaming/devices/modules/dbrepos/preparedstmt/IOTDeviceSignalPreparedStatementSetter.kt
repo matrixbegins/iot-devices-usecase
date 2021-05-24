@@ -35,7 +35,7 @@ class IOTDeviceSignalPreparedStatementSetter(private val signals: List<IOTDevice
                 stmt.setLong(14, timestamp)
 
             }
-            logger.info("Processing batch insert of size = {} ", signals.size)
+            logger.debug("Processing batch insert of size = {} ", signals.size)
         }
         catch (ex: SQLException){
             logger.error("Error in prepared statements. ", ex)

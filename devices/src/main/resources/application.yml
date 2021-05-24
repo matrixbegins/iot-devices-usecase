@@ -32,10 +32,10 @@ logging:
   level:
     org:
       springframework:
-        web: DEBUG
+        web: INFO
         jdbc:
-          core: DEBUG
-    hat.streaming.devices: DEBUG
+          core: ERROR
+    hat.streaming.devices: INFO
 
 server:
   servlet:

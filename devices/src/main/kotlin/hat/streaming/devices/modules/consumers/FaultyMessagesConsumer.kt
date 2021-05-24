@@ -25,7 +25,7 @@ class FaultyMessagesConsumer(val faultySignalService: FaultySignalService) {
                               , @Header(KafkaHeaders.RECEIVED_TIMESTAMP) kafkaTimestamp: List<Long> ): Unit = runBlocking(
         Dispatchers.Default) {
 
-        with(logger) {
+//        with(logger) {
 //            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
 //            info("beginning process faulty messages : {} ", faultySignals.size)
 //
@@ -38,10 +38,11 @@ class FaultyMessagesConsumer(val faultySignalService: FaultySignalService) {
 //                    kafkaTimestamp[i].toString()
 //                )
 //            }
+//        }
 
-            launch(Dispatchers.IO)  { faultySignalService.saveSignals(faultySignals) }
-            info("faulty messages processed")
-        }
+        launch(Dispatchers.IO)  { faultySignalService.saveSignals(faultySignals) }
+        logger.debug("faulty messages processed")
+
     }
 
 }

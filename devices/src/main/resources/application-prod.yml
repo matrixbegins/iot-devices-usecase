@@ -34,7 +34,7 @@ logging:
   level:
     org:
       springframework:
-        web: INFO
+        web: ERROR
         jdbc:
           core: ERROR
     hat.streaming.devices: INFO

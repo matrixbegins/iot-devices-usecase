@@ -28,7 +28,7 @@ class DeviceSignalMainTopicProducer {
 
             val obj = object : ListenableFutureCallback<SendResult<String, IOTDeviceSignal>> {
                 override fun onSuccess(message: SendResult<String, IOTDeviceSignal>?) {
-                    logger.info("Message published with offset: {}", message?.recordMetadata?.offset())
+                    logger.debug("Message published with offset: {}", message?.recordMetadata?.offset())
                 }
 
                 override fun onFailure(error: Throwable) {

@@ -23,7 +23,7 @@ class CompromisedMessagesConsumer(val compromisedSignalService: CompromisedSigna
                               , @Header(KafkaHeaders.RECEIVED_PARTITION_ID) partitions: List<Int>
                               , @Header(KafkaHeaders.OFFSET) offsets: List<Long> ): Unit = runBlocking(Dispatchers.Default) {
 
-        with(logger) {
+//        with(logger) {
 //            info("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
 //            info("beginning to process compromised messages : {} ", faultySignals.size)
 //
@@ -35,9 +35,10 @@ class CompromisedMessagesConsumer(val compromisedSignalService: CompromisedSigna
 //                    offsets[i]
 //                )
 //            }
-            launch(Dispatchers.IO) { compromisedSignalService.saveSignals(faultySignals) }
-            info("compromised messages processed")
-        }
+//        }
+
+        launch(Dispatchers.IO) { compromisedSignalService.saveSignals(faultySignals) }
+        logger.debug("compromised messages processed")
     }
 
 }

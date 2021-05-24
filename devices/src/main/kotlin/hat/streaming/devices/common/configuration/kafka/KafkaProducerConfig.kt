@@ -26,7 +26,7 @@ class KafkaProducerConfig(private val bootstrapServers: String){
         var config: MutableMap<String, Any> = HashMap()
         config["bootstrap.servers"] = bootstrapServers
         config["acks"] = "1"
-        config["retries"] = "3"
+        config["retries"] = "1"
         config["compression.type"] = "gzip"
         config["partitioner.class"] = "org.apache.kafka.clients.producer.RoundRobinPartitioner"
 
@@ -52,7 +52,7 @@ class KafkaProducerConfig(private val bootstrapServers: String){
         val props: MutableMap<String, Any> = getCommonProducerProps()
         props["key.serializer"] = StringSerializer::class.java
         props["value.serializer"] = JsonSerializer::class.java
-        props["client.id"] = "kotlin_stream_processing_application"
+        props["client.id"] = "kotlin_stream_processing_application_baseiot"
 
         return DefaultKafkaProducerFactory<String, BaseIOTSignal>(props)
     }
@@ -65,7 +65,7 @@ class KafkaProducerConfig(private val bootstrapServers: String){
         val props: MutableMap<String, Any> = getCommonProducerProps()
         props["key.serializer"] = StringSerializer::class.java
         props["value.serializer"] = JsonSerializer::class.java
-        props["client.id"] = "kotlin_stream_processing_application"
+        props["client.id"] = "kotlin_stream_processing_application_iotdevice"
 
         return DefaultKafkaProducerFactory<String, IOTDeviceSignal>(props)
     }

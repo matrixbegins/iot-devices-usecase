@@ -29,7 +29,7 @@ class FaultySignalProducer {
 
             val obj = object : ListenableFutureCallback<SendResult<String, BaseIOTSignal>> {
                 override fun onSuccess(message: SendResult<String, BaseIOTSignal>?) {
-                    logger.info("Message published with offset: {}", message?.recordMetadata?.offset())
+                    logger.debug("Message published with offset: {}", message?.recordMetadata?.offset())
                 }
 
                 override fun onFailure(error: Throwable): Unit {

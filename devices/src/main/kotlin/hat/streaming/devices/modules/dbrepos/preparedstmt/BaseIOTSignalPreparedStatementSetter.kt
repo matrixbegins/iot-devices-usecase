@@ -30,7 +30,7 @@ class BaseIOTSignalPreparedStatementSetter(private val signals: List<BaseIOTSign
                 stmt.setLong(10, timestamp)
 
             }
-            logger.info("Processing batch insert of size = {} ", signals.size)
+            logger.debug("Processing batch insert of size = {} ", signals.size)
         }
         catch (ex: SQLException){
             logger.error("Error in prepared statements. ", ex)
