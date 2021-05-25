@@ -13,6 +13,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.serializer.JsonSerializer
+import java.util.*
 
 
 @EnableKafka
@@ -39,7 +40,7 @@ class KafkaProducerConfig(private val bootstrapServers: String){
         props["bootstrap.servers"] = bootstrapServers
         props["key.serializer"] = StringSerializer::class.java
         props["value.serializer"] = StringSerializer::class.java
-        props["client.id"] = "kotlin_stream_processing_application"
+        props["client.id"] = "kotlin_app_" + UUID.randomUUID().toString()
 
         return DefaultKafkaProducerFactory<String, String>(props)
     }
@@ -52,7 +53,7 @@ class KafkaProducerConfig(private val bootstrapServers: String){
         val props: MutableMap<String, Any> = getCommonProducerProps()
         props["key.serializer"] = StringSerializer::class.java
         props["value.serializer"] = JsonSerializer::class.java
-        props["client.id"] = "kotlin_stream_processing_application_baseiot"
+        props["client.id"] = "kotlin_baseiot_" + UUID.randomUUID().toString()
 
         return DefaultKafkaProducerFactory<String, BaseIOTSignal>(props)
     }
@@ -65,7 +66,7 @@ class KafkaProducerConfig(private val bootstrapServers: String){
         val props: MutableMap<String, Any> = getCommonProducerProps()
         props["key.serializer"] = StringSerializer::class.java
         props["value.serializer"] = JsonSerializer::class.java
-        props["client.id"] = "kotlin_stream_processing_application_iotdevice"
+        props["client.id"] = "kotlin_iotdevice_" + UUID.randomUUID().toString()
 
         return DefaultKafkaProducerFactory<String, IOTDeviceSignal>(props)
     }
