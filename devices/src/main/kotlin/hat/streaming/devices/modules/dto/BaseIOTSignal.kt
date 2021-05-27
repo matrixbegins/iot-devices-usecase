@@ -13,7 +13,7 @@ open class BaseIOTSignal (
     var messageDigest: String? = null,
     var signalType: String? = null
 ) {
-    fun getSHA512(input:String):String{
+    private fun getSHA512(input:String):String{
         val md: MessageDigest = MessageDigest.getInstance("SHA-512")
         val messageDigest = md.digest(input.toByteArray())
 

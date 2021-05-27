@@ -20,7 +20,7 @@ class IOTSignalProcessorService(val deviceInfoService: DeviceInfoService,
 
     val logger: Logger = LoggerFactory.getLogger(IOTSignalProcessorService::class.java)
 
-    suspend fun processIOTSignal(signal: BaseIOTSignal): Unit {
+    suspend fun processIOTSignal(signal: BaseIOTSignal) {
 
         val deviceInfo = run {
             logger.debug("getting device info from Device service= {} ", signal.deviceId)

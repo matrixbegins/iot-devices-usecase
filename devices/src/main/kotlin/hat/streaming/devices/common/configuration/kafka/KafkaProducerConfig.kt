@@ -24,7 +24,7 @@ import java.util.*
 class KafkaProducerConfig(private val bootstrapServers: String){
 
     private fun getCommonProducerProps() : MutableMap<String, Any> {
-        var config: MutableMap<String, Any> = HashMap()
+        val config: MutableMap<String, Any> = HashMap()
         config["bootstrap.servers"] = bootstrapServers
         config["acks"] = "1"
         config["retries"] = "1"

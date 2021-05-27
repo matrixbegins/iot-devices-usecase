@@ -15,7 +15,7 @@ class IOTDeviceSignalPreparedStatementSetter(private val signals: List<IOTDevice
     override fun setValues(stmt: PreparedStatement, idx: Int) {
         // | (device_id, signal_type, signal_unit, signal_value, device_cluster, org_id, facility_id, device_timestamp,
         //  | reported_year, reported_month, reported_day, reported_hour, reported_minute, reported_sec)
-        var signal: IOTDeviceSignal =  signals[idx]
+        val signal: IOTDeviceSignal =  signals[idx]
         try {
             with(signal){
                 stmt.setString(1, deviceId)
@@ -35,7 +35,7 @@ class IOTDeviceSignalPreparedStatementSetter(private val signals: List<IOTDevice
                 stmt.setLong(14, timestamp)
 
             }
-            logger.debug("Processing batch insert of size = {} ", signals.size)
+
         }
         catch (ex: SQLException){
             logger.error("Error in prepared statements. ", ex)

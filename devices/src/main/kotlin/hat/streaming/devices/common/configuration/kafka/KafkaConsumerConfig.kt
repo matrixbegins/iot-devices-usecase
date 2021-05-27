@@ -47,7 +47,7 @@ class KafkaConsumerConfig {
     val batchSizeLG: String = "10"
 
     private fun getCommonConsumerProps() : MutableMap<String, Any> {
-        var config: MutableMap<String, Any> = HashMap()
+        val config: MutableMap<String, Any> = HashMap()
         config["bootstrap.servers"] = bootstrapServers
         config["max.poll.records"] = batchSizeSm
         config["enable.auto.commit"] = true
@@ -59,7 +59,7 @@ class KafkaConsumerConfig {
 
     @Bean
     fun entryKeyValueTopicConsumerFactory(): ConsumerFactory<String, String> {
-        var config: MutableMap<String, Any> = getCommonConsumerProps()
+        val config: MutableMap<String, Any> = getCommonConsumerProps()
         config["key.deserializer"] = StringDeserializer::class.java
         config["value.deserializer"] = StringDeserializer::class.java
         config["group.id"] = "entry_topic_key_value_transformer_consumer"

@@ -62,7 +62,7 @@ class HomeController(val deviceTypeRepo: DeviceTypeRepo,
     @Cacheable(cacheNames = ["device_info"], key = "#deviceId")
     fun deviceInfo(@PathVariable("deviceId") deviceId: String): DeviceInfo = runBlocking(Dispatchers.Default) {
         logger.info("getting device Info for {} :: ", deviceId)
-        return@runBlocking deviceInfoRepo.findByDeviceId(deviceId).orElseThrow();
+        return@runBlocking deviceInfoRepo.findByDeviceId(deviceId).orElseThrow()
     }
 
     @GetMapping("/devices/org/{orgId}/facility/{facilityId}")
@@ -70,7 +70,7 @@ class HomeController(val deviceTypeRepo: DeviceTypeRepo,
     fun deviceInfoByOrgAndFacility(@PathVariable("orgId") orgId: String,
                                    @PathVariable("facilityId") facilityId: String ): Iterable<DeviceInfo> {
         logger.info("getting all devices for org: {} and facility {} :: ", orgId, facilityId)
-        return deviceInfoRepo.findByOrgIdAndFacilityId(orgId, facilityId);
+        return deviceInfoRepo.findByOrgIdAndFacilityId(orgId, facilityId)
     }
 
     @GetMapping("/send/signal/faulty")
@@ -87,7 +87,7 @@ class HomeController(val deviceTypeRepo: DeviceTypeRepo,
                     logger.info("Message published with offset: {}", message?.recordMetadata?.offset())
                 }
 
-                override fun onFailure(error: Throwable): Unit {
+                override fun onFailure(error: Throwable) {
                     logger.error("Error in publishing message: {}", payload, error)
                 }
             }
@@ -112,7 +112,7 @@ class HomeController(val deviceTypeRepo: DeviceTypeRepo,
                     logger.info("Message published with offset: {}", message?.recordMetadata?.offset())
                 }
 
-                override fun onFailure(error: Throwable): Unit {
+                override fun onFailure(error: Throwable) {
                     logger.error("Error in publishing message: {}", payload, error)
                 }
             }

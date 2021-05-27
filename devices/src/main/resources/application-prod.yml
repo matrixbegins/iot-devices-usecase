@@ -27,7 +27,7 @@ spring:
 
       consumer-batch-size-sm: 10
       consumer-batch-size-md: 500
-      consumer-batch-size-lg: 1000
+      consumer-batch-size-lg: 4000
 
 
 logging:

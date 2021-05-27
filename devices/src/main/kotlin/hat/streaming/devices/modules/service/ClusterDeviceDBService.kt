@@ -16,7 +16,7 @@ class ClusterDeviceDBService(private val jdbcTemplate: JdbcTemplate? = null) {
 
     val logger: Logger = LoggerFactory.getLogger(ClusterDeviceDBService::class.java)
 
-    suspend fun saveClusterDeviceSignals(signals: List<IOTDeviceSignal>): Unit {
+    suspend fun saveClusterDeviceSignals(signals: List<IOTDeviceSignal>) {
         // save array of this data into db
         val insertSQL = """ INSERT INTO devices.device_cluster_metric_tracker 
             | (device_id, signal_type, signal_unit, signal_value, device_cluster, org_id, facility_id, device_timestamp, 
@@ -33,6 +33,7 @@ class ClusterDeviceDBService(private val jdbcTemplate: JdbcTemplate? = null) {
     }
 
     private suspend fun runBatchInsert(signals: List<IOTDeviceSignal>, sql: String): Job {
+        logger.info("Processing batch insert of size = {} ", signals.size)
         return coroutineScope {
             launch(Dispatchers.Default) {
                 jdbcTemplate!!.batchUpdate(sql, IOTDeviceSignalPreparedStatementSetter(signals))

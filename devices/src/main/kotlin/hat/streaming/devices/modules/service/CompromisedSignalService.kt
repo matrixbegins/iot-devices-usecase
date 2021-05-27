@@ -18,7 +18,7 @@ class CompromisedSignalService(private val jdbcTemplate: JdbcTemplate? = null,
 
     val logger: Logger = LoggerFactory.getLogger(CompromisedSignalService::class.java)
 
-    suspend fun saveSignals(signals: List<BaseIOTSignal>): Unit {
+    suspend fun saveSignals(signals: List<BaseIOTSignal>) {
         // save array of this data into db
         val insertSQL = """ INSERT INTO devices.compromised_signals 
             | (device_id, signal_type, signal_value, message_digest, device_timestamp, reported_year, 
@@ -35,6 +35,7 @@ class CompromisedSignalService(private val jdbcTemplate: JdbcTemplate? = null,
     }
 
     private suspend fun runBatchInsert(signals: List<BaseIOTSignal>, sql: String): Job {
+        logger.info("Processing batch insert of size = {} ", signals.size)
         return coroutineScope {
             launch(Dispatchers.Default) {
                 jdbcTemplate!!.batchUpdate(sql, CompromisedPreparedStatementSetter(signals))

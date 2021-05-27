@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Component
-class CreateTopicService() {
+class CreateTopicService {
 
     @Value("\${spring.kafka.bootstrap-servers:}")
     val bootstrapServers: String = ""
@@ -24,12 +24,12 @@ class CreateTopicService() {
 
     val logger: Logger = LoggerFactory.getLogger(CreateTopicService::class.java)
 
-    fun admin() = AdminClient.create(mapOf(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers ))
+    fun admin(): AdminClient = AdminClient.create(mapOf(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers ))
 
     suspend fun createTopic(topicName: String): Boolean {
         val response = admin().createTopics( listOf(getNewTopic(topicName)) ).all()
         response.get()
-        return true;
+        return true
     }
 
     fun getNewTopic(topicName: String): NewTopic {

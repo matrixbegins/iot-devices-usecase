@@ -39,7 +39,7 @@ class DeviceSignalMainTopicProducer {
         }
     }
 
-    suspend fun flushProducer(): Unit {
+    suspend fun flushProducer() {
         producerTemplate.flush()
     }
 }

@@ -33,6 +33,7 @@ class FaultySignalService(private val jdbcTemplate: JdbcTemplate? = null ) {
     }
 
     private suspend fun runBatchInsert(signals: List<BaseIOTSignal>, sql: String): Job {
+        logger.info("Processing batch insert of size = {} ", signals.size)
         return coroutineScope {
              launch(Dispatchers.Default) {
                 jdbcTemplate!!.batchUpdate(sql, BaseIOTSignalPreparedStatementSetter(signals))

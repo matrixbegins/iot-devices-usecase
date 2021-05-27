@@ -60,6 +60,7 @@ class AllSignalDBService(private val jdbcTemplate: JdbcTemplate? = null) {
     }
 
     private suspend fun runBatchInsert(signals: List<IOTDeviceSignal>, sql: String): Job {
+        logger.info("Processing batch insert of size = {} ", signals.size)
         return coroutineScope {
             launch(Dispatchers.Default) {
                 jdbcTemplate!!.batchUpdate(sql, IOTDeviceSignalPreparedStatementSetter(signals))
@@ -68,7 +69,7 @@ class AllSignalDBService(private val jdbcTemplate: JdbcTemplate? = null) {
         }
     }
 
-    suspend fun saveMetricTrackerSignals( signalType: String, signals: List<IOTDeviceSignal>): Unit {
+    suspend fun saveMetricTrackerSignals( signalType: String, signals: List<IOTDeviceSignal>) {
         // save array of this data into db
         val insertTemplateSQL = """ INSERT INTO devices.##table_name##_metric_tracker
             | (device_id, signal_type, signal_unit, signal_value, device_cluster, org_id, facility_id, device_timestamp, 
@@ -102,7 +103,7 @@ class AllSignalDBService(private val jdbcTemplate: JdbcTemplate? = null) {
             }
         }
 
-        logger.debug("batch Insert complete....")
+        logger.info("batch Insert complete....")
     }
 
     fun createSignalMetricTrackerTable(signalType: String): Boolean {

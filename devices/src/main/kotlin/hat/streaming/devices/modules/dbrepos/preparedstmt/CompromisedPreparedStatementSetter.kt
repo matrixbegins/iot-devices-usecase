@@ -15,7 +15,7 @@ class CompromisedPreparedStatementSetter(private val signals: List<BaseIOTSignal
     override fun setValues(stmt: PreparedStatement, idx: Int) {
         // (device_id, signal_type, signal_value, message_digest,  device_timestamp,
         // reported_year, reported_month, reported_day, reported_hour, reported_minute, reported_sec)
-        var signal: BaseIOTSignal =  signals[idx]
+        val signal: BaseIOTSignal =  signals[idx]
         try {
             with(signal){
                 stmt.setString(1, deviceId)
@@ -31,7 +31,6 @@ class CompromisedPreparedStatementSetter(private val signals: List<BaseIOTSignal
                 stmt.setLong(11, timestamp)
 
             }
-            logger.debug("Processing batch insert of size = {} ", signals.size)
         }
         catch (ex: SQLException){
             logger.error("Error in prepared statements. ", ex)

@@ -26,7 +26,7 @@ spring:
       all-signal-concurrency: 1
       consumer-batch-size-sm: 10
       consumer-batch-size-md: 10
-      consumer-batch-size-lg: 10
+      consumer-batch-size-lg: 2000
 
 logging:
   level:
@@ -63,3 +63,15 @@ management:
       base-path: /inspector
       exposure:
         include: prometheus,health,info,env,metrics
+
+
+opentracing:
+  jaeger:
+    enabled: true
+    log-spans: true
+    service-name: ziotApp
+
+    udp-sender:
+      host: localhost
+      port: 6831
+
