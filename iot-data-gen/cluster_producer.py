@@ -2,7 +2,7 @@
 import threading, time, json, random, os, sys
 import logging
 
-from kafka import KafkaAdminClient, KafkaConsumer, KafkaProducer
+from kafka import KafkaProducer
 from datetime import datetime, timedelta
 from config import brokers_config, topic_config
 from cluster_message import ClusterMessage
@@ -30,6 +30,7 @@ class ClusterProducer(threading.Thread):
         self.brokers = brokers_config.get(os.getenv('APP_ENV', 'local'))
 
         self.gen_faulty = faulty
+        self.counter = 0
 
         logger.debug("Producer params: %s", vars(self))
 
@@ -47,12 +48,15 @@ class ClusterProducer(threading.Thread):
         while not self.stop_event.is_set():
             try:
                 self.generate_signals()
+                self.producer.flush()
 
             except Exception as err:
                 logger.error(f"[{self.producer_id}]:: \t .... ERROR:: %s", err)
                 raise err
 
-        # self.producer.close()
+        self.producer.flush()
+        self.producer.close()
+        logger.info(f"[{self.producer_id}]:: messages published: %s", self.counter)
 
 
     def generate_signals(self):
@@ -117,4 +121,5 @@ class ClusterProducer(threading.Thread):
         payload = msg.to_dict() if self.msg_format == 'J' else msg.to_key_value()
 
         self.producer.send(self.kafka_topic, payload)
+        self.counter = self.counter + 1
         # logger.info(f"[{self.producer_id}]:: new event published: %s", payload)

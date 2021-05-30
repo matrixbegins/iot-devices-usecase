@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-import threading, time, json, random, os, sys
+import threading, time, json, os
 import logging
 
-from kafka import KafkaAdminClient, KafkaConsumer, KafkaProducer
+from kafka import KafkaProducer
 from datetime import datetime, timedelta
 from config import brokers_config, topic_config
 from message import Message
@@ -30,11 +30,14 @@ class Producer(threading.Thread):
         self.kafka_topic = topic_config.get(self.msg_format, 'device_events_entry_json')
         self.brokers = brokers_config.get(os.getenv('APP_ENV', 'local'))
 
+        self.counter = 0
+
         logger.debug("Producer params: %s", vars(self))
 
         self.producer = KafkaProducer(bootstrap_servers=self.brokers,
                     value_serializer= bytes if self.msg_format == 'K' else  lambda v: json.dumps(v).encode('utf-8'),
-                    client_id= self.producer_id, acks=0, compression_type='gzip')
+                    client_id= self.producer_id, acks=0,
+                    request_timeout_ms=45000, linger_ms=100, compression_type='gzip')
 
 
     def stop(self):
@@ -46,12 +49,16 @@ class Producer(threading.Thread):
         while not self.stop_event.is_set():
             try:
                 self.generate_signals()
+                self.producer.flush()
 
             except Exception as err:
                 logger.error(f"[{self.producer_id}]:: \t .... ERROR:: %s", err)
                 raise err
 
-        # self.producer.close()
+
+        self.producer.flush()
+        self.producer.close()
+        logger.info(f"[{self.producer_id}]:: messages published: %s", self.counter)
 
 
     def generate_signals(self):
@@ -112,5 +119,6 @@ class Producer(threading.Thread):
         payload = msg.to_dict() if self.msg_format == 'J' else msg.to_key_value().encode('utf8')
 
         self.producer.send(self.kafka_topic, payload)
+        self.counter = self.counter + 1
         # logger.info(f"[{self.producer_id}]:: new event published: %s", payload)
 

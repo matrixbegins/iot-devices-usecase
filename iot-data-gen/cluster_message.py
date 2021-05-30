@@ -1,5 +1,5 @@
 import json, hashlib
-from datetime import datetime
+from time import time
 
 class ClusterMessage:
     def __init__(self, device, signal_value):
@@ -11,7 +11,7 @@ class ClusterMessage:
         self.signalType = device.get('signalType')
 
         self.signal_value = round(signal_value, 4)
-        self.timestamp = self.timestampMilliSec64()
+        self.timestamp = int(time()*1000000)
         self.msg_digest = self.calc_msg_digest()
 
 
@@ -32,14 +32,8 @@ class ClusterMessage:
             'digest': self.msg_digest
         }
 
-
     def calc_msg_digest(self):
         h = hashlib.new('sha512')
         payload = f"{self.deviceId}|{self.signal_value}|{self.timestamp}"
         h.update(bytes(payload.encode('utf-8')))
         return h.hexdigest()
-
-
-    def timestampMilliSec64(self):
-	    return int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds() * 1000)
-
