@@ -1,11 +1,11 @@
 import json, hashlib, random
-from datetime import datetime
+from time import time
 
 class Message:
     def __init__(self, deviceId, signal_value):
         self.deviceId = deviceId
         self.signal_value = round(signal_value, 4)
-        self.timestamp = self.timestampMilliSec64()
+        self.timestamp = int(time()*1000000)
         self.msg_digest = self.calc_msg_digest()
 
 
@@ -28,12 +28,10 @@ class Message:
         h.update(bytes(payload.encode('utf-8')))
         digest = h.hexdigest()
 
-        if random.choice(range(1, 10000)) in (1,2):
+        if random.uniform(0, 0.1) < 10e-9:
             digest = digest[:-1]
+            print("tampered signal")
 
         return digest
 
-
-    def timestampMilliSec64(self):
-	    return int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds() * 1000)
 

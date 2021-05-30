@@ -103,6 +103,13 @@ def temperature_generator(pattern, interval, timelimit, unit, devices, msgformat
 @click.option('-t', '--runtime', default=20, envvar='ZEUS_IOT_RUNTIME',
                     prompt="Enter total runtime of the task: ")
 def pressure_generator(pattern, interval, timelimit, unit, devices, msgformat, runtime):
+    print("pattern:: ", pattern)
+    print("interval:: ", interval)
+    print("timelimit:: ", timelimit)
+    print("unit:: ", unit)
+    print("devices:: ", devices)
+    print("format:: ", msgformat)
+    print("runtime:: ", runtime)
     # get random list of devices from the device inventory
     device_list = random.sample(device_master_list.get('pressure'), devices)
 
@@ -131,7 +138,7 @@ def pressure_generator(pattern, interval, timelimit, unit, devices, msgformat, r
                     prompt="Enter total runtime of the task: ")
 def generate_cluster_load(runtime):
     pattern = 'C'   # constant
-    interval = 0.01
+    interval = 0.001
     timelimit = 40
 
     signal_type = 'temperature'
@@ -195,10 +202,72 @@ def generate_cluster_load(runtime):
         task.join()
 
 
+@click.command('radiation', short_help='Generates radiation metric')
+@click.option('-p', '--pattern', envvar='ZEUS_IOT_PATTERN',
+                    default='L',
+                    prompt='Signal pattern:\n - [L]inear \n - [E]xponential \n - [C]onstant \n - [S]pike \n >> ',
+                    type=click.Choice(['L', 'E', 'C', 'S'], case_sensitive=False),
+                    help='Pattern of the singal to change linear, exponential, const, spike')
+@click.option('-i', '--interval', envvar='ZEUS_IOT_INTERVAL',
+                    default=0.5,
+                    prompt="Time Interval(in seconds) enter 0 for no delay: ",
+                    help='The interval between generating consequent signals in seconds.')
+@click.option('-l', '--timelimit', envvar='ZEUS_IOT_TIME_LIMIT',
+                    default=30,
+                    prompt="How Long to maintain the peak pattern(in seconds): ",
+                    help='How Long to maintain the peak pattern for singals(in seconds) in case of Linear, exp, spike traffic pattern')
+@click.option('-u', '--unit', envvar='ZEUS_IOT_METRIC_UNIT',
+                    default='SV',
+                    prompt="Enter Unit of radiation to generate signal: \n - [GY] \n - [SV]  \n >> ",
+                    type=click.Choice(['GY', 'SV',], case_sensitive=False),
+                    help='Measurement unit')
+@click.option('-n', '--devices', envvar='ZEUS_IOT_NO_DEVICES',
+                    default=1, prompt="Enter number of devices: ",
+                    type=click.IntRange(1, 100, clamp=True),
+                    help='Number of devices to generate signals')
+@click.option('-f', '--msgformat', default='J', envvar='ZEUS_IOT_MSG_FORMAT',
+                    prompt="Enter message format: \n - [J]SON \n - [K]ey Value \n >> ",
+                    type=click.Choice(['J', 'K'], case_sensitive=False),
+                    help='The message format of signal')
+@click.option('-t', '--runtime', default=20, envvar='ZEUS_IOT_RUNTIME',
+                    prompt="Enter total runtime of the task: ")
+def radiation_generator(pattern, interval, timelimit, unit, devices, msgformat, runtime):
+    print("pattern:: ", pattern)
+    print("interval:: ", interval)
+    print("timelimit:: ", timelimit)
+    print("unit:: ", unit)
+    print("devices:: ", devices)
+    print("format:: ", msgformat)
+    print("runtime:: ", runtime)
+
+    # get random list of devices from the device inventory
+    device_list = random.sample(device_master_list.get('radiation'), devices)
+
+    producer_list = []
+    for device in device_list:
+        producer_list.append(Producer('radiation', device, pattern, interval, timelimit, unit, msgformat))
+
+
+    for t in producer_list:
+        t.start()
+        time.sleep(0.01)    # because we want to make a gap in start of the execution of two threads.
+
+    time.sleep(runtime)
+
+    # Stop threads
+    for task in producer_list:
+        task.stop()
+
+    for task in producer_list:
+        task.join()
+
+
+
 
 cli.add_command(temperature_generator)
 cli.add_command(pressure_generator)
 cli.add_command(generate_cluster_load)
+cli.add_command(radiation_generator)
 
 
 def main():
