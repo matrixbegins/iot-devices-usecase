@@ -19,6 +19,9 @@ class DeviceInfoService(val deviceInfoRepo: DeviceInfoRepo) {
 //                        .third.get()
 
     @Cacheable(cacheNames = ["device_info_client"], key = "#deviceId")
-    suspend fun getDeviceInfo(deviceId: String): DeviceInfo = deviceInfoRepo.findByDeviceId(deviceId).orElseThrow()
+    fun getDeviceInfo(deviceId: String): DeviceInfo {
+        logger.info("getting device info for device :: {}", deviceId)
+        return deviceInfoRepo.findByDeviceId(deviceId).orElseThrow()
+    }
 
 }

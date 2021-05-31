@@ -103,7 +103,7 @@ class AllSignalDBService(private val jdbcTemplate: JdbcTemplate? = null) {
             }
         }
 
-        logger.info("batch Insert complete....")
+        logger.debug("batch Insert complete....")
     }
 
     fun createSignalMetricTrackerTable(signalType: String): Boolean {
